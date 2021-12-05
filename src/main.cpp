@@ -4,12 +4,14 @@
 
 #include "render/render.h"
 #include "globals.h"
+#include "assets.h"
+
+// Define globals
+std::clock_t globals::startTime;
 
 int main() {
-	if (globals::init() != 0) {
-    std::cout << "Initialization of global variables have failed!!!\nExiting.";
-    return -1;
-  }
+  assets::loadFonts();
+  assets::loadTextures();
 
   globals::startTime = std::clock();
   std::thread renderThread(render::render);

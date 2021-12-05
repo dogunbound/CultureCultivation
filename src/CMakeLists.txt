@@ -10,25 +10,31 @@ SET(BASEPATH "${CMAKE_SOURCE_DIR}")
 INCLUDE_DIRECTORIES("${BASEPATH}")
 
 # Tell the compiler where the source code is, and add it to the executable
-set(includes 
+set(headers 
   "globals.h"
+  "assets.h"
 
+  # ************************************ Render
   "render/render.h"
+
+  "render/camera/camera.h"
 	)
 
 set(cpp
 	"main.cpp"
 
+  # ************************************ Render
   "render/render.cpp"
+
+  "render/camera/camera.cpp"
 	)
 
-add_executable(${PROJECT_NAME} ${includes} ${cpp})
+add_executable(${PROJECT_NAME} ${headers} ${cpp})
 
 # Add the following SFML module to the application:
 target_link_libraries(${PROJECT_NAME} sfml-graphics)
 target_link_libraries(${PROJECT_NAME} sfml-window)
 target_link_libraries(${PROJECT_NAME} sfml-system)
 target_link_libraries(${PROJECT_NAME} sfml-audio)
-target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${Boost_LIBRARIES} )
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 23)
