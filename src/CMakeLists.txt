@@ -18,6 +18,8 @@ set(headers
   "render/render.h"
 
   "render/camera/camera.h"
+  # ************************************ Map Generation
+  "mapGeneration/mapGenerator.h"
 	)
 
 set(cpp
@@ -27,6 +29,8 @@ set(cpp
   "render/render.cpp"
 
   "render/camera/camera.cpp"
+  # ************************************ Map Generation
+  "mapGeneration/mapGenerator.cpp"
 	)
 
 add_executable(${PROJECT_NAME} ${headers} ${cpp})

@@ -6,15 +6,16 @@
 #include "globals.h"
 
 namespace assets {
-  static sf::Font mainFont;
+  extern sf::Font *mainFont; 
 
-  static sf::Texture grass;
+  extern sf::Texture *grass; // Temporary
 
 
-  static int loadFonts() {
+  static int loadFonts() { // Self explanatory. return 0 means it passed.
     std::mutex mtx;
     mtx.lock();
-    if (!mainFont.loadFromFile("assets/fonts/PixelFJVerdana12pt.ttf")) {
+    mainFont = new sf::Font();
+    if (!mainFont->loadFromFile("assets/fonts/PixelFJVerdana12pt.ttf")) {
       return -1;
     }
 
@@ -22,10 +23,11 @@ namespace assets {
     return 0;
   }
 
-  static int loadTextures() {
+  static int loadTextures() { // Self explanatory. return 0 means it passed.
     std::mutex mtx;
     mtx.lock();
-    if (!grass.loadFromFile("assets/_tmp/grass.png")) {
+    grass = new sf::Texture();
+    if (!grass->loadFromFile("assets/_tmp/grass.png")) {
       return -1;
     }
 

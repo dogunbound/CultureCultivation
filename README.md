@@ -18,10 +18,13 @@ Build CMakeConfig:\
 `cmake ../src/`\
 \
 Make Project:\
-`make`\
+`make -j8`\
 \
 Run Project:\
-`./Culture_Cultivation`
+`./Culture_Cultivation`\
+\
+This is also a quicker version of the above cmake:
+`clear ; cmake ../src/ && make -j16 && ./Culture_Cultivation`
 
 ## Design notes:
 
