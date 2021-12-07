@@ -5,8 +5,8 @@ namespace camera {
   // used to update the camera whether it be a player camera or the map camera or etc...
   int updateCamera() {
     // Set viewMove to zero when before anything is done so that when nothing is done, it is at zero
-    render::viewMove->x=0;
-    render::viewMove->y=0;
+    render::viewMove.x=0;
+    render::viewMove.y=0;
     switch(cameraType) {
       case 0:
         mapCamera();
@@ -29,20 +29,23 @@ namespace camera {
       return 1; // Shouldn't do anything
     }
 
+    sf::Vector2f scaledScrubbing = render::viewSize;
+    scaledScrubbing.x = scaledScrubbing.x / render::windowSize.x * mapCameraSpeed;
+    scaledScrubbing.y = scaledScrubbing.y / render::windowSize.y * mapCameraSpeed;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-      render::viewMove->x = -1 * mapCameraScale;
+      render::viewMove.x = -1 * scaledScrubbing.x;
       previousViewChangeTS = std::clock();
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-      render::viewMove->x = 1 * mapCameraScale;
+      render::viewMove.x = 1 * scaledScrubbing.x;
       previousViewChangeTS = std::clock();
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-      render::viewMove->y = -1 * mapCameraScale;
+      render::viewMove.y = -1 * scaledScrubbing.y;
       previousViewChangeTS = std::clock();
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-      render::viewMove->y = 1 * mapCameraScale;
+      render::viewMove.y = 1 * scaledScrubbing.y;
       previousViewChangeTS = std::clock();
     }
     return 0; // Did something

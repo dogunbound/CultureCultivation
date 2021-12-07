@@ -5,6 +5,7 @@
 
 namespace globals {
   extern std::clock_t startTime;
+  extern unsigned short coreCount;
 
   // This is the AVL tree for bounding boxes. We use this for its simplicity and ease of mutex blocking
   struct EntityNode {
@@ -18,25 +19,26 @@ namespace globals {
   };
 
   // This is the initial node in the tree
-  extern EntityTree eTree;
+  extern EntityTree* eTree;
 
-  // This is a graph struct base off of nodes that build a simple LinkedList of map objects
-  // The map starts at the center and branches off in 8 directions
-  struct MapNode {
-    MapNode* up;
-    MapNode* upLeft;
-    MapNode* upRight;
-    MapNode* down;
-    MapNode* downLeft;
-    MapNode* downRight;
-    MapNode* right;
-    MapNode* left;
-    sf::Sprite *sprite;
+  // Most games render chunk by chunk. I understand why that is the case now.
+  // The mapchunks point to an above, 8 directions for where the next chunk is located at.
+  // The sf::Sprite array is the actual ground
+
+  const unsigned short chunkSize = 32;
+  struct MapChunk {
+    MapChunk* up;
+    MapChunk* left;
+    MapChunk* down;
+    MapChunk* right;
+    MapChunk* downRight;
+    MapChunk* downLeft;
+    MapChunk* upRight;
+    MapChunk* upLeft;
+    sf::Sprite sprites[chunkSize][chunkSize];
+    sf::Vector2i coord;
   };
+  const unsigned short mapSpriteSize = 32;
 
-  struct MapTree {
-    MapNode* centerOfMap;
-  };
-
-  extern MapTree centerOfMap;
+  extern MapChunk* centerChunk;
 }

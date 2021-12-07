@@ -8,6 +8,9 @@
 namespace camera {
   static std::clock_t previousViewChangeTS = std::clock();
 
+  // Self explanatory
+  static double cameraZoom = 1.0d;
+
   // this is to choose which camera rule to follow.
   // 0: map camera
   // 1: player camera
@@ -16,7 +19,7 @@ namespace camera {
   // This is out switch case for updating the camera to the correct position.
   int updateCamera();
 
-  static int mapCameraScale = 4;
+  static int mapCameraSpeed = 32;
   // These are the different kind of camera movement available
   int mapCamera();
 }
