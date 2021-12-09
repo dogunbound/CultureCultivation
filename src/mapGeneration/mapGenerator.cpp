@@ -7,6 +7,8 @@
 #include "assets.h"
 #include "globals.h"
 
+using namespace globals;
+
 namespace mapGenerator {
 
   int mapGeneratorSwitch(const unsigned short &mapGenerationType, const int &seed) {
@@ -27,47 +29,73 @@ namespace mapGenerator {
     std::mutex mtx;
 
     mtx.lock();
-    globals::centerChunk = new globals::MapChunk;
-    globals::centerChunk->coord = sf::Vector2i(0,0);
+    centerChunk = new MapChunk;
+    centerChunk->coord = sf::Vector2i(0,0);
     mtx.unlock();
 
-    auto setGrassSpriteIndexPos = [](globals::MapChunk *mc, unsigned short r, unsigned short c, int x, int y) {
-      mc->sprites[r][c] = sf::Sprite();
-      sf::Sprite *sp = &globals::centerChunk->sprites[r][c];
-      sp->setTexture(*assets::grass);
-      sp->setPosition(x, y);
-      sp->setScale(2,2);
-    };
-
-    /*
-    // load center chunk. The next chunks being loaded is where the real fun begins
-    for ( unsigned short r = 0; r < globals::chunkSize; r++) {
-      for ( unsigned short c = 0; c < globals::chunkSize; c++) {
-        mtx.lock();
-        setGrassSpriteIndexPos(*&globals::centerChunk, r, c, r * globals::mapSpriteSize, c * globals::mapSpriteSize);
-        mtx.unlock();
-      }
-    }*/
-
-    mtx.lock();
-    globals::MapChunk *mc = *&globals::centerChunk;
-    mtx.unlock();
-    for (unsigned int i = 0; i < 20; i++) {
-      // up
-      for (unsigned short r = 0; r < globals::chunkSize; r++) {
-        for (unsigned short c = 0; c < globals::chunkSize; c++) {
+    auto loadChunkWithGrassTexture = [](MapChunk *mc) {
+      std::mutex mtx;
+      for (unsigned short r = 0; r < BlocksPerChunkAxis; r++) {
+        for (unsigned short c = 0; c < BlocksPerChunkAxis; c++) {
           mtx.lock();
-          setGrassSpriteIndexPos(*&mc, r, c, mc->coord.x + r * globals::mapSpriteSize, mc->coord.y - c * globals::mapSpriteSize);
+          int x = mc->coord.x + r * mapSpriteSize;
+          int y = mc->coord.y - c * mapSpriteSize;
+          mc->sprites[r][c] = sf::Sprite();
+          sf::Sprite *sp = &mc->sprites[r][c];
+          sp->setTexture(*assets::grass);
+          sp->setPosition(x, y);
+          sp->setScale(2,2);
           mtx.unlock();
         }
       }
+    };
 
+    mtx.lock();
+    MapChunk *mc = centerChunk;
+    MapChunk *leftSide = centerChunk;
+    MapChunk *rightSide = centerChunk;
+    MapChunk *topSide = centerChunk;
+    MapChunk *bottomSide = centerChunk;
+    mtx.unlock();
+
+    bool finished = false;
+    while (!finished) {
       mtx.lock();
-      mc->up = new globals::MapChunk;
-      globals::MapChunk *tmp = *&mc;
-      mc = *&mc->up;
-      mc->down = *&tmp;
-      mc->coord = sf::Vector2i(tmp->coord.x, tmp->coord.y - globals::chunkSize * globals::mapSpriteSize);
+      // find corner of each new step up
+      MapChunk *topLeft = topSide;
+      MapChunk *topRight = topSide;
+      MapChunk *bottomLeft = bottomSide;
+      MapChunk *bottomRight = bottomSide;
+      while (topLeft->left != nullptr) {
+        topLeft = topLeft->left;
+        topRight = topRight->right;
+        bottomLeft = bottomLeft->left;
+        bottomRight = bottomRight->right;
+      }
+
+      // initialize new corner
+      topLeft->topLeft = new MapChunk;
+      topRight->topRight = new MapChunk;
+      bottomLeft->bottomLeft = new MapChunk;
+      bottomRight->bottomRight = new MapChunk;
+      topLeft->topLeft->bottomRight = topLeft;
+      topRight->topRight->bottomLeft = topRight;
+      bottomLeft->bottomLeft->topRight = bottomLeft;
+      bottomRight->bottomRight->topLeft = bottomRight;
+
+      // Fill row between topLeft-topRight, bottomLeft-bottomRight, and fill column between topLeft-bottomLeft and topRight-bottomRight
+      MapChunk *fillTop = topLeft->topLeft;
+      MapChunk *fillBottom = bottomLeft->bottomLeft;
+      MapChunk *fillLeft = topLeft->topLeft;
+      MapChunk *fillRight = topRight->topRight;
+      while (topLeft->left != topRight) {
+      }
+
+      // Move sides outwards
+      rightSide = rightSide->right;
+      leftSide = leftSide->left;
+      topSide = topSide->top;
+      bottomSide = bottomSide->bottom;
       mtx.unlock();
     }
     return 0; // Pass

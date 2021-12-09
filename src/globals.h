@@ -25,20 +25,27 @@ namespace globals {
   // The mapchunks point to an above, 8 directions for where the next chunk is located at.
   // The sf::Sprite array is the actual ground
 
-  const unsigned short chunkSize = 32;
+  const unsigned short BlocksPerChunkAxis = 32;
+  const unsigned short mapSpriteSize = 32;
+  const unsigned short PixelsPerChunkAxis = BlocksPerChunkAxis * mapSpriteSize;
   struct MapChunk {
-    MapChunk* up;
+    MapChunk* top;
     MapChunk* left;
-    MapChunk* down;
+    MapChunk* bottom;
     MapChunk* right;
-    MapChunk* downRight;
-    MapChunk* downLeft;
-    MapChunk* upRight;
-    MapChunk* upLeft;
-    sf::Sprite sprites[chunkSize][chunkSize];
+    MapChunk* bottomRight;
+    MapChunk* bottomLeft;
+    MapChunk* topRight;
+    MapChunk* topLeft;
+    sf::Sprite sprites[BlocksPerChunkAxis][BlocksPerChunkAxis];
     sf::Vector2i coord;
   };
-  const unsigned short mapSpriteSize = 32;
 
   extern MapChunk* centerChunk;
+
+  static int init() {
+    eTree = nullptr;
+    centerChunk = nullptr;
+    return 0;
+  }
 }

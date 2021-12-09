@@ -17,18 +17,9 @@ namespace render{
   sf::Vector2f viewSize; // Size of view port
   sf::Vector2<unsigned int> windowSize; // This variable is to figure out the size of the window. Very useful in weird ways
 
-  int updateFunctions() { // This is to update the camera position and other view related things
-    int cameraUpdateSuccess = camera::updateCamera();
-    if (cameraUpdateSuccess != 0 && cameraUpdateSuccess != 1) {
-      std::cout << "Failed to update camera. Failed with error code: " << cameraUpdateSuccess << "\n";
-      return -1;
-    }
-
-    return 0;
-  }
-
   int render() { // This is where the actual rendering of the map and objects occur. No bounding just fast computation of all object images
     sf::RenderWindow window(sf::VideoMode(1024, 576), "Culture & Cultivation");
+    bool windowIsFocused = true;
 
     viewMove = sf::Vector2f(0.0f, 0.0f);
     view = window.getDefaultView();
@@ -45,6 +36,16 @@ namespace render{
       sf::Event event;
       while (window.pollEvent(event))
       {
+        if (windowIsFocused) { // Only register inputs if window is focused
+          switch (event.type) {
+            case sf::Event::MouseWheelMoved:
+              camera::cameraZoom *= (event.mouseWheel.delta >= 0) ? 0.75d : 1.5;
+              break;
+            default:
+              break;
+          }
+        }
+
         switch (event.type) {
           case sf::Event::Closed:
             window.close();
@@ -52,20 +53,26 @@ namespace render{
           case sf::Event::Resized:
             view.setSize(static_cast<float>(event.size.width), static_cast<float>(event.size.height));
             break;
-          case sf::Event::MouseWheelMoved:
-            camera::cameraZoom *= (event.mouseWheel.delta >= 0) ? 0.75d : 1.5;
+          case sf::Event::GainedFocus:
+            windowIsFocused = true;
+            break;
+          case sf::Event::LostFocus:
+            windowIsFocused = false;
             break;
           default:
             break;
         }
 
       }
+
+      if (windowIsFocused) { // Only register inputs if window is focused
+        camera::updateCamera();
+      }
       // Setup window and view sizing each frame
       // MUST be done before update
       windowSize = sf::Vector2<unsigned int>(window.getSize().x, window.getSize().y);
       viewSize = sf::Vector2f(view.getSize().x, view.getSize().y);
-
-      updateFunctions();
+      
       view.zoom(camera::cameraZoom);
       camera::cameraZoom = 1;
       view.move(viewMove);
@@ -75,15 +82,6 @@ namespace render{
       mtx.lock();
       if (globals::centerChunk != nullptr) {
         globals::MapChunk *mc = *&globals::centerChunk;
-        do {
-          for (unsigned char r = 0; r < globals::chunkSize; r++) {
-            for (unsigned char c = 0; c < globals::chunkSize; c++) {
-              //std::cout << *&mc->sprites[r][c].getPosition().x << " " << *&mc->sprites[r][c].getPosition().y << "\n";
-              window.draw(*&mc->sprites[r][c]);
-            }
-          }
-          mc = *&mc->up;
-        } while (mc != nullptr);
       }
       mtx.unlock();
       window.display();
