@@ -11,6 +11,9 @@ sfml\
 boost
 ## How to build and run
 
+## Quickstart script 
+`mkdir release ; mkdir release/assets ; mkdir debug ; mkdir debug/assets ; cp -r src/assets/* release/assets ; cp -r src/assets/* debug/assets/`\
+
 ## Release 
 Be in the `/release` directory.\
 If this is a newly cloned project, do: `mkdir release` in project root\
