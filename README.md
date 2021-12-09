@@ -11,8 +11,8 @@ sfml\
 boost
 ## How to build and run
 
-Be in the `/build` directory.\
-If this is a newly cloned project, do: `mkdir build` in project root\
+Be in the `/release` directory.\
+If this is a newly cloned project, do: `mkdir release` in project root\
 \
 Build CMakeConfig:\
 `cmake ../src/`\
@@ -25,6 +25,23 @@ Run Project:\
 \
 This is also a quicker version of the above cmake:\
 `clear ; cmake ../src/ && make -j16 && ./Culture_Cultivation`
+
+## Debug
+
+Be in the `/debug` directory.\
+If this is a newly cloned project, do: `mkdir debug` in project root\
+\
+Build CMakeConfig:\
+`cmake -DCMAKE_BUILD_TYPE=Debug ../src/`\
+\
+Make Project:\
+`make -j8`\
+\
+Run Project:\
+`./Culture_Cultivation`\
+\
+This is also a quicker version of the above cmake:\
+`clear ; cmake -DCMAKE_BUILD_TYPE=Debug ../src/ && make -j16`
 
 ## Design notes:
 
