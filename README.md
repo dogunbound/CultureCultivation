@@ -13,6 +13,7 @@ boost
 
 Be in the `/release` directory.\
 If this is a newly cloned project, do: `mkdir release` in project root\
+Then do `cp -r src/assets/* release/assets`\
 \
 Build CMakeConfig:\
 `cmake ../src/`\
@@ -30,6 +31,7 @@ This is also a quicker version of the above cmake:\
 
 Be in the `/debug` directory.\
 If this is a newly cloned project, do: `mkdir debug` in project root\
+Then do `cp -r src/assets/* debug/assets`\
 \
 Build CMakeConfig:\
 `cmake -DCMAKE_BUILD_TYPE=Debug ../src/`\
