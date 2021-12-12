@@ -1,8 +1,9 @@
+#include "globals.h"
+
 #include <iostream>
 #include <thread>
 #include <ctime>
 
-#include "globals.h"
 // Init globals
 std::clock_t globals::startTime;
 globals::MapChunk* globals::centerChunk;

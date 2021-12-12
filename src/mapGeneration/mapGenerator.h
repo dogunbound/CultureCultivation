@@ -11,4 +11,7 @@ namespace mapGenerator {
 
   // This is the 0 generator, flat ground, near indefinite range
   int mapGen_0_betaFlat(const int &seed);
+
+  // Test code to ensure map gen has no coordinate hiccups
+  int testMapGenCoordinates();
 }

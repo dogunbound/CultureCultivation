@@ -1,6 +1,6 @@
 #pragma once
-#include <SFML/Graphics.hpp>
 #include "globals.h"
+#include <SFML/Graphics.hpp>
 
 namespace render {
   static sf::View view; // This is the camera view

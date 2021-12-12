@@ -1,9 +1,10 @@
 #pragma once
+#include "render/render.h"
+
 #include <SFML/Graphics.hpp>
 #include <ctime>
 #include <cmath>
 
-#include "render/render.h"
 
 namespace camera {
   static std::clock_t previousViewChangeTS = std::clock();

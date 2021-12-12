@@ -28,15 +28,12 @@ namespace globals {
   const unsigned short BlocksPerChunkAxis = 32;
   const unsigned short mapSpriteSize = 32;
   const unsigned short PixelsPerChunkAxis = BlocksPerChunkAxis * mapSpriteSize;
+  const unsigned short PixelsPerChunkAxisDividedBy2 = PixelsPerChunkAxis / 2; // Slight optimization for render method
   struct MapChunk {
     MapChunk* top;
     MapChunk* left;
     MapChunk* bottom;
     MapChunk* right;
-    MapChunk* bottomRight;
-    MapChunk* bottomLeft;
-    MapChunk* topRight;
-    MapChunk* topLeft;
     sf::Sprite sprites[BlocksPerChunkAxis][BlocksPerChunkAxis];
     sf::Vector2i coord;
   };
