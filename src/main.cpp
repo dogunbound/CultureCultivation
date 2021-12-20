@@ -1,5 +1,10 @@
 #include "globals.h"
+#include "assets.h"
+#include "render/render.h"
+#include "mapGeneration/mapGenerator.h"
+#include "utils/assetClasses.h"
 
+#include <SFML/Graphics/Texture.hpp>
 #include <iostream>
 #include <thread>
 #include <ctime>
@@ -10,15 +15,11 @@ globals::MapChunk* globals::centerChunk;
 unsigned short globals::coreCount;
 globals::EntityTree *globals::eTree;
 static int globals::init();
-
-#include "assets.h"
 // Init assets
 sf::Font *assets::mainFont;
 sf::Texture *assets::grass;
+assets::SpriteSheet *assets::autumnGrass;
 
-
-#include "render/render.h"
-#include "mapGeneration/mapGenerator.h"
 
 
 int main() {

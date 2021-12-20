@@ -4,11 +4,14 @@
 #include <mutex>
 
 #include "globals.h"
+#include "utils/assetClasses.h"
 
 namespace assets {
   extern sf::Font *mainFont; 
 
   extern sf::Texture *grass; // Temporary
+
+  extern SpriteSheet *autumnGrass; // Autumn grass sprite sheet
 
 
   static int loadFonts() { // Self explanatory. return 0 means it passed.
@@ -31,6 +34,8 @@ namespace assets {
       return -1;
     }
 
+    autumnGrass = new SpriteSheet("assets/_tmp/autumnGrass_1_2_3_4.png", 16);
+    
     mtx.unlock();
     return 0;
   }

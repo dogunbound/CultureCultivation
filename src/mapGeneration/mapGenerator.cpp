@@ -11,7 +11,7 @@
 using namespace globals;
 
 namespace mapGenerator {
-  unsigned int mapSize = 100; // Default map size
+  unsigned int mapSize = 5; // Default map size
 
   int mapGeneratorSwitch(const unsigned short &mapGenerationType, const int &seed) {
     switch(mapGenerationType) {
@@ -44,7 +44,10 @@ namespace mapGenerator {
           auto y = mc->coord.y + c * mapSpriteSize;
           mc->sprites[r][c] = sf::Sprite();
           sf::Sprite *sp = &mc->sprites[r][c];
-          sp->setTexture(*assets::grass);
+          sp->setTexture(*assets::autumnGrass->texture);
+          sf::Rect<int> tRect = assets::autumnGrass->getSpriteRectAtIndex(rand() % assets::autumnGrass->size());
+          std::cout << tRect.top << ", " << tRect.left << " : " << tRect.height << " : " << tRect.width << "\n";
+          sp->setTextureRect(tRect);
           sp->setPosition(x, y);
           sp->setScale(2,2);
           mtx.unlock();
