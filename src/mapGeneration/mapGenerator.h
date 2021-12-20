@@ -3,6 +3,7 @@
 #include "globals.h"
 
 namespace mapGenerator {
+  extern unsigned int mapSize;
   /* mapGenerationType defines which function will be used to gneerate the map
    * 0: beta flat ground for near indefinite range
   */
@@ -11,7 +12,4 @@ namespace mapGenerator {
 
   // This is the 0 generator, flat ground, near indefinite range
   int mapGen_0_betaFlat(const int &seed);
-
-  // Test code to ensure map gen has no coordinate hiccups
-  int testMapGenCoordinates();
 }

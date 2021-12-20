@@ -13,8 +13,8 @@
 
 namespace render{
   // Load Globals
-  sf::Vector2f viewMove; // This variable is to allow movement of the camera
-  sf::Vector2f viewSize; // Size of view port
+  sf::Vector2f worldViewMove; // This variable is to allow movement of the camera
+  sf::Vector2f worldViewSize; // Size of worldView port
   sf::Vector2<unsigned int> windowSize; // This variable is to figure out the size of the window. Very useful in weird ways
 
   int render() { // This is where the actual rendering of the map and objects occur. No bounding just fast computation of all object images
@@ -22,8 +22,9 @@ namespace render{
     std::mutex mtx; // our thread binder
     bool windowIsFocused = true;
 
-    viewMove = sf::Vector2f(0.0f, 0.0f);
-    view = window.getDefaultView();
+    worldViewMove = sf::Vector2f(0.0f, 0.0f);
+    worldView = window.getDefaultView();
+    UIView = window.getDefaultView();
 
     // Setup our MapChunk pointers
     mtx.lock();
@@ -31,13 +32,32 @@ namespace render{
     mtx.unlock();
     globals::MapChunk *mc = nullptr; // Our actual camera view map pointer
 
+    // Get fps
+    unsigned short frameCount = 0;
+    std::clock_t lastSecond = std::clock();
+    sf::Text fpsCounter;
+    fpsCounter.setFont(*assets::mainFont);
+    fpsCounter.setCharacterSize(16);
+
     int c = 0;
     std::clock_t timeOfLastRender = std::clock(); // This is to setup the timer that forces c++ to stop rendering for a little bit and ease up
-    while (window.isOpen())
-    {
+    
+    while (window.isOpen()) {
+      // Calculate fps
+      frameCount++;
+      std::clock_t diffFromLastSecond = std::clock() - lastSecond;
+      if (diffFromLastSecond > CLOCKS_PER_SEC) {
+        fps = frameCount;
+        frameCount = 0;
+        lastSecond = std::clock();
+      }
+      // END Calculate fps
+      
+
       if (utils::ctimeToMilliseconds((abs(timeOfLastRender - std::clock()))) < 7) { // this basically allows for 150 frames / second, no more.
         std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(utils::ctimeToMilliseconds((abs(7 - (timeOfLastRender - std::clock())))))));
       }
+
       timeOfLastRender = std::clock(); // update time once sleep is finished
       sf::Event event;
       while (window.pollEvent(event))
@@ -45,10 +65,10 @@ namespace render{
         if (windowIsFocused) { // Only register inputs if window is focused
           switch (event.type) {
             case sf::Event::MouseWheelMoved:
-              if ((view.getSize().x < 5 || view.getSize().y < 5) && event.mouseWheel.delta >= 0) { // prevent zoom from going to far in
+              if ((worldView.getSize().x < 5 || worldView.getSize().y < 5) && event.mouseWheel.delta >= 0) { // prevent zoom from going to far in
                 break;
               }
-              if ((view.getSize().x > 1e5 || view.getSize().y > 1e5) && event.mouseWheel.delta < 0) { // prevent zoom from going to far out
+              if ((worldView.getSize().x > 1e5 || worldView.getSize().y > 1e5) && event.mouseWheel.delta < 0) { // prevent zoom from going to far out
                 break;
               }
               camera::cameraZoom *= (event.mouseWheel.delta >= 0) ? 0.75d : 1.5;
@@ -63,7 +83,7 @@ namespace render{
             window.close();
             break;
           case sf::Event::Resized:
-            view.setSize(static_cast<float>(event.size.width), static_cast<float>(event.size.height));
+            worldView.setSize(static_cast<float>(event.size.width), static_cast<float>(event.size.height));
             break;
           case sf::Event::GainedFocus:
             windowIsFocused = true;
@@ -80,70 +100,86 @@ namespace render{
       if (windowIsFocused) { // Only register inputs if window is focused
         camera::updateCamera();
       }
-      // Setup window and view sizing each frame
+      // Setup window and worldView sizing each frame
       // MUST be done before update
       windowSize = sf::Vector2<unsigned int>(window.getSize().x, window.getSize().y);
-      viewSize = sf::Vector2f(view.getSize().x, view.getSize().y);
+      worldViewSize = sf::Vector2f(worldView.getSize().x, worldView.getSize().y);
       mtx.lock();
       if (*centerChunkPointer != nullptr && mc == nullptr) { // init the map loader
         mc = *centerChunkPointer;
       }
       mtx.unlock();
      
-      // Move view based on zoom
-      view.zoom(camera::cameraZoom);
+      // Move worldView based on zoom
+      worldView.zoom(camera::cameraZoom);
       camera::cameraZoom = 1;
-      view.move(viewMove);
+      worldView.move(worldViewMove);
 
-      // finally set the changes made onto the view onto the window
-      window.setView(view);
+      // finally set the changes made onto the worldView onto the window
+      window.setView(worldView);
 
-      // With the view set, we can now make calculations on where and what coordinates need to be rendered
-      sf::Vector2i viewCenter = sf::Vector2i(view.getCenter().x, view.getCenter().y);
-      int xMin = viewCenter.x - view.getSize().x/2;
-      int yMin = viewCenter.y - view.getSize().y/2;
-      int xMax = viewCenter.x + view.getSize().x/2;
-      int yMax = viewCenter.y + view.getSize().y/2;
+      // With the worldView set, we can now make calculations on where and what coordinates need to be rendered
+      sf::Vector2i worldViewCenter = sf::Vector2i(worldView.getCenter().x, worldView.getCenter().y);
+      int xMin = worldViewCenter.x - worldView.getSize().x/2 - globals::PixelsPerChunkAxis;
+      int yMin = worldViewCenter.y - worldView.getSize().y/2 - globals::PixelsPerChunkAxis;
+      int xMax = worldViewCenter.x + worldView.getSize().x/2 + globals::PixelsPerChunkAxis;
+      int yMax = worldViewCenter.y + worldView.getSize().y/2 + globals::PixelsPerChunkAxis;
 
       window.clear();
       mtx.lock();
       if (mc != nullptr) {
-        int xMinChunk = xMin - xMin % globals::PixelsPerChunkAxis-globals::PixelsPerChunkAxis;
-        int yMinChunk = yMin - yMin % globals::PixelsPerChunkAxis-globals::PixelsPerChunkAxis;
-        std::cout << mc->coord.x << ", " << mc->coord.y << " : " << xMinChunk << ", " << yMinChunk << "\n";
-        while (mc->coord.x != xMinChunk && mc->coord.y != yMinChunk) {
-          if (mc->coord.x < xMinChunk && mc->right != nullptr) { // if mc coord.x is less than xMinChunk, move mc coord.x to the right
-            mc = mc->right;
-          }
-          if (mc->coord.x < xMinChunk && mc->left != nullptr) { // if mc coord.x is greater than xMinChunk, move mc coord.y to the left
-            mc = mc->left;
-          }
-
-          if (mc->coord.y < yMinChunk && mc->bottom != nullptr) { // if mc coord.y is less than yMinChunk, move mc coord.y down
-            mc = mc->bottom;
-          }
-          if (mc->coord.y > yMinChunk && mc->top != nullptr) { // if mc coord.y is greater than yMinChunk, move mc coord.y top
-            mc = mc->top;
-          }
+        int xMinChunk = xMin - xMin % globals::PixelsPerChunkAxis;
+        int yMinChunk = yMin - yMin % globals::PixelsPerChunkAxis;
+        while (mc->coord.y > yMin && mc->top != nullptr) { // Move up to find the proper y position to start render at
+          mc = mc->top;
         }
-        for (auto r = 0; r < globals::BlocksPerChunkAxis; r++) {
-          for (auto c = 0; c < globals::BlocksPerChunkAxis; c++) {
-            try {
-              window.draw(mc->sprites[r][c]);
-            } catch (const std::exception& e) {
-              std::cout << e.what();
+        while (mc->coord.y < yMin && mc->bottom != nullptr) { // Move down to the proper y position
+          mc = mc->bottom;
+        }
+        while (mc->coord.x > xMin && mc->left != nullptr) { // Move left to the proper x position
+          mc = mc->left;
+        }
+        while (mc->coord.x < xMin && mc->right != nullptr) { // Move right to the proper x position
+          mc = mc->right;
+        }
+
+        globals::MapChunk *rowmc = mc;
+        while (rowmc->bottom != nullptr && rowmc->bottom->coord.y < yMax) {
+          globals::MapChunk *colmc = rowmc;
+          while (colmc->right != nullptr && colmc->right->coord.x < xMax) {
+            for (auto r = 0; r < globals::BlocksPerChunkAxis; r++) {
+              for (auto c = 0; c < globals::BlocksPerChunkAxis; c++) {
+                try {
+                  window.draw(colmc->sprites[r][c]);
+                } catch (const std::exception& e) {
+                  std::cout << e.what();
+                }
+              }
             }
+            colmc = colmc->right;
           }
+          rowmc = rowmc->bottom;
         }
       }
-
-      int r = 5;
-      sf::CircleShape circle(r);
-      circle.setFillColor(sf::Color::Red);
-      circle.setPosition(viewCenter.x, viewCenter.y);
-      window.draw(circle);
       mtx.unlock();
+
+      sf::Vector2i UIViewCenter = sf::Vector2i(UIView.getCenter().x, UIView.getCenter().y);
+      int UIxMin = UIViewCenter.x - UIView.getSize().x/2;
+      int UIyMin = UIViewCenter.y - UIView.getSize().y/2;
+      int UIxMax = UIViewCenter.x + UIView.getSize().x/2;
+      int UIyMax = UIViewCenter.y + UIView.getSize().y/2;
+
+      UIView = sf::View(sf::FloatRect(0,0,window.getSize().x, window.getSize().y));
+      window.setView(UIView);
+      // Fps draw
+      if (showFps) {
+        fpsCounter.setString(std::to_string(fps));
+        fpsCounter.setPosition(UIxMax - fpsCounter.getLocalBounds().width-5, UIyMin + fpsCounter.getLocalBounds().height-10);
+        window.draw(fpsCounter);
+      }
       window.display();
+
+      // World view
     }
 
     return 0;

@@ -7,7 +7,7 @@
 // Init globals
 std::clock_t globals::startTime;
 globals::MapChunk* globals::centerChunk;
-unsigned short coreCount;
+unsigned short globals::coreCount;
 globals::EntityTree *globals::eTree;
 static int globals::init();
 
@@ -23,7 +23,7 @@ sf::Texture *assets::grass;
 
 int main() {
   // Hardcode corecount
-  coreCount = 16;
+  globals::coreCount = 16;
   globals::init();
   assets::loadFonts();
   assets::loadTextures();
