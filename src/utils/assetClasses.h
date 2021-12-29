@@ -5,7 +5,7 @@
 namespace assets {
   class SpriteSheet {
     public:
-      sf::Texture *texture;
+      sf::Texture texture;
       const unsigned int sizeOfEachSprite;
       SpriteSheet(char const* pathToFile, unsigned int sizeOfEachSprite);
 
@@ -13,6 +13,6 @@ namespace assets {
       sf::Rect<int> getSpriteRectAtIndex(const unsigned short& index);
 
       // Gets the number of indeces in the sprite sheet
-      unsigned int size();
+      unsigned int numOfSprites();
   };
 }

@@ -36,21 +36,16 @@ namespace mapGenerator {
     mtx.unlock();
 
     auto loadChunkWithGrassTexture = [](MapChunk *mc) {
-      std::mutex mtx;
       for (auto r = 0; r < BlocksPerChunkAxis; r++) {
         for (auto c = 0; c < BlocksPerChunkAxis; c++) {
-          mtx.lock();
           auto x = mc->coord.x + r * mapSpriteSize;
           auto y = mc->coord.y + c * mapSpriteSize;
           mc->sprites[r][c] = sf::Sprite();
           sf::Sprite *sp = &mc->sprites[r][c];
-          sp->setTexture(*assets::autumnGrass->texture);
-          sf::Rect<int> tRect = assets::autumnGrass->getSpriteRectAtIndex(rand() % assets::autumnGrass->size());
-          std::cout << tRect.top << ", " << tRect.left << " : " << tRect.height << " : " << tRect.width << "\n";
-          sp->setTextureRect(tRect);
+          sp->setTexture(assets::autumnGrass->texture);
+          sp->setTextureRect(assets::autumnGrass->getSpriteRectAtIndex(rand() % assets::autumnGrass->numOfSprites()));
           sp->setPosition(x, y);
-          sp->setScale(2,2);
-          mtx.unlock();
+          sp->setScale(globals::mapSpriteSize / assets::autumnGrass->sizeOfEachSprite, globals::mapSpriteSize / assets::autumnGrass->sizeOfEachSprite);
         }
       }
     };

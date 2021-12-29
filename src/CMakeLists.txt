@@ -24,6 +24,9 @@ set(headers
   # ************************************ utils
   "utils/clock.h"
   "utils/assetClasses.h"
+
+  # ************************************ Entities
+  "entities/entity.h"
 	)
 
 set(cpp
@@ -39,6 +42,9 @@ set(cpp
   # ************************************ utils
   "utils/clock.cpp"
   "utils/assetClasses.cpp"
+  
+  # ************************************ Entities
+  "entities/entity.cpp"
 	)
 
 add_executable(${PROJECT_NAME} ${headers} ${cpp})

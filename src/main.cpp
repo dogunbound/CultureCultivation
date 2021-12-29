@@ -17,8 +17,8 @@ globals::EntityTree *globals::eTree;
 static int globals::init();
 // Init assets
 sf::Font *assets::mainFont;
-sf::Texture *assets::grass;
 assets::SpriteSheet *assets::autumnGrass;
+assets::SpriteSheet *assets::tree_autumnRedLeaves;
 
 
 

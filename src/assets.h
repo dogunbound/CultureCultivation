@@ -9,9 +9,10 @@
 namespace assets {
   extern sf::Font *mainFont; 
 
-  extern sf::Texture *grass; // Temporary
-
   extern SpriteSheet *autumnGrass; // Autumn grass sprite sheet
+
+  // TREES ***************************************************************** TREES
+  extern SpriteSheet *tree_autumnRedLeaves;
 
 
   static int loadFonts() { // Self explanatory. return 0 means it passed.
@@ -29,12 +30,9 @@ namespace assets {
   static int loadTextures() { // Self explanatory. return 0 means it passed.
     std::mutex mtx;
     mtx.lock();
-    grass = new sf::Texture();
-    if (!grass->loadFromFile("assets/_tmp/grass.png")) {
-      return -1;
-    }
-
-    autumnGrass = new SpriteSheet("assets/_tmp/autumnGrass_1_2_3_4.png", 16);
+    
+    autumnGrass = new SpriteSheet("assets/_tmp/autumnGrass2.png", 32);
+    tree_autumnRedLeaves = new SpriteSheet("assets/entities/trees/autumnTree1.png", 32);
     
     mtx.unlock();
     return 0;

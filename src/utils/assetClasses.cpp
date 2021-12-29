@@ -3,17 +3,17 @@
 #include <iostream>
 
 namespace assets {
-  SpriteSheet::SpriteSheet(char const* pathToFile, unsigned int sizeOfEachSprite) : sizeOfEachSprite{sizeOfEachSprite}, texture{new sf::Texture()} {
-    if (!texture->loadFromFile(pathToFile)) {
+  SpriteSheet::SpriteSheet(char const* pathToFile, unsigned int sizeOfEachSprite) : sizeOfEachSprite{sizeOfEachSprite}, texture{sf::Texture()} {
+    if (!texture.loadFromFile(pathToFile)) {
       std::cout << "Failed to load texture: " << pathToFile << "\n";
       exit(-1);
     }
 
-    texture->setSmooth(false);
+    texture.setSmooth(false);
   }
 
   sf::Rect<int> SpriteSheet::getSpriteRectAtIndex(const unsigned short& index) {
-    if (index >= this->size()) {
+    if (index >= this->numOfSprites()) {
       std::cout << "invalid texture index\n";
       return sf::Rect<int>(0,0,0,0);
     }
@@ -22,8 +22,8 @@ namespace assets {
     return sf::Rect<int>(indexBySpriteSize, 
         0, 
         sizeOfEachSprite,
-        texture->getSize().y);
+        texture.getSize().y);
   }
 
-  unsigned int SpriteSheet::size() { return  texture->getSize().x / sizeOfEachSprite; }
+  unsigned int SpriteSheet::numOfSprites() { return texture.getSize().x / sizeOfEachSprite; }
 }
