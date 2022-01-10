@@ -1,6 +1,7 @@
 #include "mapGenerator.h"
 #include "assets.h"
 #include "globals.h"
+#include "entities/plants/trees.h"
 
 #include <stdlib.h>
 #include <SFML/Graphics.hpp>
@@ -11,22 +12,19 @@
 using namespace globals;
 
 namespace mapGenerator {
-  unsigned int mapSize = 5; // Default map size
+  unsigned int mapSize = 200; // Default map size
 
-  int mapGeneratorSwitch(const unsigned short &mapGenerationType, const int &seed) {
+  void mapGeneratorSwitch(const unsigned short &mapGenerationType, const int &seed) {
     switch(mapGenerationType) {
       case 0:
         mapGen_0_betaFlat(seed);
         break;
       default:
         std::cout << "undefined map generation type\n";
-        return 1; // Undefined mapGenerationType.
     }
-    
-    return 0; // Pass
   }
 
-  int mapGen_0_betaFlat(const int &seed) {
+  void mapGen_0_betaFlat(const int &seed) {
     srand(seed);
     std::mutex mtx;
 
@@ -42,10 +40,10 @@ namespace mapGenerator {
           auto y = mc->coord.y + c * mapSpriteSize;
           mc->sprites[r][c] = sf::Sprite();
           sf::Sprite *sp = &mc->sprites[r][c];
-          sp->setTexture(assets::autumnGrass->texture);
-          sp->setTextureRect(assets::autumnGrass->getSpriteRectAtIndex(rand() % assets::autumnGrass->numOfSprites()));
+          sp->setTexture(assets::spriteSheets[1]->texture);
+          sp->setTextureRect(assets::spriteSheets[1]->getSpriteRectAtIndex(rand() % assets::spriteSheets[1]->numOfSprites()));
           sp->setPosition(x, y);
-          sp->setScale(globals::mapSpriteSize / assets::autumnGrass->sizeOfEachSprite, globals::mapSpriteSize / assets::autumnGrass->sizeOfEachSprite);
+          sp->setScale(globals::mapSpriteSize / assets::spriteSheets[1]->sizeOfEachSprite, globals::mapSpriteSize / assets::spriteSheets[1]->sizeOfEachSprite);
         }
       }
     };
@@ -73,6 +71,14 @@ namespace mapGenerator {
 
       cc = rc;
       for (auto c = 0; c < mapSize; c++) {
+        // Tree generation
+        int numOfTrees = rand() % 200 + 100;
+        for (int i = 0; i < numOfTrees; i++) {
+          cc->entities.push_back(new entity::Tree(0, sf::Vector2f(
+                  rand() % globals::PixelsPerChunkAxis + cc->coord.x,
+                  rand() % globals::PixelsPerChunkAxis + cc->coord.y)));
+        }
+        // End of tree generation
         cc->right = new MapChunk;
         cc->right->left = cc;
         cc->right->coord = sf::Vector2i(cc->coord.x + globals::PixelsPerChunkAxis, cc->coord.y);
@@ -83,7 +89,5 @@ namespace mapGenerator {
       }
     }
     mtx.unlock();
-
-    return 0; // Pass
   }
 }

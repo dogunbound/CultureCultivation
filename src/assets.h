@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <mutex>
 
 #include "globals.h"
@@ -8,12 +9,8 @@
 
 namespace assets {
   extern sf::Font *mainFont; 
-
-  extern SpriteSheet *autumnGrass; // Autumn grass sprite sheet
-
-  // TREES ***************************************************************** TREES
-  extern SpriteSheet *tree_autumnRedLeaves;
-
+  
+  extern SpriteSheet *spriteSheets[3];
 
   static int loadFonts() { // Self explanatory. return 0 means it passed.
     std::mutex mtx;
@@ -30,9 +27,10 @@ namespace assets {
   static int loadTextures() { // Self explanatory. return 0 means it passed.
     std::mutex mtx;
     mtx.lock();
-    
-    autumnGrass = new SpriteSheet("assets/_tmp/autumnGrass2.png", 32);
-    tree_autumnRedLeaves = new SpriteSheet("assets/entities/trees/autumnTree1.png", 32);
+
+    for (unsigned int i = 0; i < 3; i++) {
+      spriteSheets[i] = new SpriteSheet(i);
+    }
     
     mtx.unlock();
     return 0;

@@ -3,6 +3,7 @@
 #include "render/render.h"
 #include "mapGeneration/mapGenerator.h"
 #include "utils/assetClasses.h"
+#include "world/worldUpdater.h"
 
 #include <SFML/Graphics/Texture.hpp>
 #include <iostream>
@@ -13,12 +14,10 @@
 std::clock_t globals::startTime;
 globals::MapChunk* globals::centerChunk;
 unsigned short globals::coreCount;
-globals::EntityTree *globals::eTree;
 static int globals::init();
 // Init assets
 sf::Font *assets::mainFont;
-assets::SpriteSheet *assets::autumnGrass;
-assets::SpriteSheet *assets::tree_autumnRedLeaves;
+assets::SpriteSheet *assets::spriteSheets[3];
 
 
 
@@ -31,10 +30,11 @@ int main() {
 
   // This is where the fun really starts
   globals::startTime = std::clock();
-  std::thread mapGeneratorThread(mapGenerator::mapGeneratorSwitch, 0, 0);
   std::thread renderThread(render::render);
+  std::thread mapGeneratorThread(mapGenerator::mapGeneratorSwitch, 0, 0);
 
-  renderThread.join();
   mapGeneratorThread.join();
+  world::coreAssigner();
+  renderThread.join();
   return 0;
 }

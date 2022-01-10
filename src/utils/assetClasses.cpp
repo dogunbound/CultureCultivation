@@ -1,11 +1,17 @@
 #include "assetClasses.h"
+#include "assets.h"
 
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <iostream>
 
 namespace assets {
-  SpriteSheet::SpriteSheet(char const* pathToFile, unsigned int sizeOfEachSprite) : sizeOfEachSprite{sizeOfEachSprite}, texture{sf::Texture()} {
-    if (!texture.loadFromFile(pathToFile)) {
-      std::cout << "Failed to load texture: " << pathToFile << "\n";
+  // SPRITE SHEET ************************************************
+  SpriteSheet::SpriteSheet(const unsigned int &id) : 
+    sizeOfEachSprite{SpriteSheetDataID[id].sizeOfEachSprite}, 
+    texture{sf::Texture()} {
+    if (!texture.loadFromFile(SpriteSheetDataID[id].pathToFile)) {
+      std::cout << "Failed to load texture: " << SpriteSheetDataID[id].pathToFile << "\n";
       exit(-1);
     }
 
@@ -15,7 +21,7 @@ namespace assets {
   sf::Rect<int> SpriteSheet::getSpriteRectAtIndex(const unsigned short& index) {
     if (index >= this->numOfSprites()) {
       std::cout << "invalid texture index\n";
-      return sf::Rect<int>(0,0,0,0);
+      return sf::Rect<int>(0,0,sizeOfEachSprite,texture.getSize().y);
     }
 
     const unsigned int indexBySpriteSize = index * sizeOfEachSprite;
@@ -25,5 +31,5 @@ namespace assets {
         texture.getSize().y);
   }
 
-  unsigned int SpriteSheet::numOfSprites() { return texture.getSize().x / sizeOfEachSprite; }
+  const unsigned int SpriteSheet::numOfSprites() const { return texture.getSize().x / sizeOfEachSprite; }
 }

@@ -1,30 +1,21 @@
 #pragma once
+#include "entities/entity.h"
+
+#include <list>
 #include <iostream>
 #include <ctime>
 #include <SFML/Graphics.hpp>
+
+
 
 namespace globals {
   extern std::clock_t startTime;
   extern unsigned short coreCount;
 
-  // This is the AVL tree for bounding boxes. We use this for its simplicity and ease of mutex blocking
-  struct EntityNode {
-    EntityNode* childLeft;
-    EntityNode* childRight;
-    bool isLeaf;
-  };
-
-  struct EntityTree {
-    EntityNode* nodes;
-  };
-
-  // This is the initial node in the tree
-  extern EntityTree* eTree;
-
   // Most games render chunk by chunk. I understand why that is the case now.
-  // The mapchunks point to an above, 8 directions for where the next chunk is located at.
+  // The mapchunks point to an above, 4 directions for where the next chunk is located at.
+  // Map chunk will also store all entity and locations. This is to allow for easy lookup of entity data based on location
   // The sf::Sprite array is the actual ground
-
   const unsigned short BlocksPerChunkAxis = 32;
   const unsigned short mapSpriteSize = 32;
   const unsigned short PixelsPerChunkAxis = BlocksPerChunkAxis * mapSpriteSize;
@@ -36,12 +27,13 @@ namespace globals {
     MapChunk* right;
     sf::Sprite sprites[BlocksPerChunkAxis][BlocksPerChunkAxis];
     sf::Vector2i coord;
+
+    std::list<entity::Entity*> entities;
   };
 
   extern MapChunk* centerChunk;
 
   static int init() {
-    eTree = nullptr;
     centerChunk = nullptr;
     return 0;
   }

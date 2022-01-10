@@ -122,11 +122,10 @@ namespace render{
       sf::Vector2i worldViewCenter = sf::Vector2i(worldView.getCenter().x, worldView.getCenter().y);
       int xMin = worldViewCenter.x - worldView.getSize().x/2 - globals::PixelsPerChunkAxis;
       int yMin = worldViewCenter.y - worldView.getSize().y/2 - globals::PixelsPerChunkAxis;
-      int xMax = worldViewCenter.x + worldView.getSize().x/2 + globals::PixelsPerChunkAxis;
-      int yMax = worldViewCenter.y + worldView.getSize().y/2 + globals::PixelsPerChunkAxis;
+      int xMax = worldViewCenter.x + worldView.getSize().x/2 + 2*globals::PixelsPerChunkAxis;
+      int yMax = worldViewCenter.y + worldView.getSize().y/2 + 2*globals::PixelsPerChunkAxis;
 
       window.clear();
-      mtx.lock();
       if (mc != nullptr) {
         int xMinChunk = xMin - xMin % globals::PixelsPerChunkAxis;
         int yMinChunk = yMin - yMin % globals::PixelsPerChunkAxis;
@@ -160,8 +159,19 @@ namespace render{
           }
           rowmc = rowmc->bottom;
         }
+
+        rowmc = mc;
+        while (rowmc->bottom != nullptr && rowmc->bottom->coord.y < yMax) {
+          globals::MapChunk *colmc = rowmc;
+          while (colmc->right != nullptr && colmc->right->coord.x < xMax) {
+            for (auto entity : colmc->entities) {
+              window.draw(entity->getSprite());
+            }
+            colmc = colmc->right;
+          }
+          rowmc = rowmc->bottom;
+        }
       }
-      mtx.unlock();
 
       sf::Vector2i UIViewCenter = sf::Vector2i(UIView.getCenter().x, UIView.getCenter().y);
       int UIxMin = UIViewCenter.x - UIView.getSize().x/2;
