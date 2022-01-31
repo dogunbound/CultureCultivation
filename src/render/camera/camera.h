@@ -20,7 +20,7 @@ namespace camera {
   // This is out switch case for updating the camera to the correct position.
   int updateCamera();
 
-  static int mapCameraSpeed = 32;
+  static int mapCameraSpeed = 2;
   // These are the different kind of camera movement available
   int mapCamera();
 }

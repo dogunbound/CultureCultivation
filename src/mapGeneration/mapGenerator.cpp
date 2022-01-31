@@ -12,7 +12,7 @@
 using namespace globals;
 
 namespace mapGenerator {
-  unsigned int mapSize = 200; // Default map size
+  unsigned int mapSize = 100; // Default map size
 
   void mapGeneratorSwitch(const unsigned short &mapGenerationType, const int &seed) {
     switch(mapGenerationType) {

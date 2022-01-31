@@ -9,17 +9,13 @@ namespace world {
 
   static void updateWorldThread(std::list<globals::MapChunk*> MapChunksToLoad) {
     std::mutex mtx;
-
     while (true) {
-      mtx.lock();
       for (auto mc : MapChunksToLoad) {
         for (auto entities : mc->entities) {
           entities->update();
         }
       }
-      mtx.unlock();
     }
-
   }
 
   static void coreAssigner() {

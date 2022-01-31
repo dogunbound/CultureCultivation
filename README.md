@@ -29,7 +29,7 @@ Run Project:\
 `./Culture_Cultivation`\
 \
 This is also a quicker version of the above cmake:\
-`clear ; cmake ../src/ && make -j16 && ./Culture_Cultivation`
+`clear ; cmake ../src/ && make -j24 && ./Culture_Cultivation`
 
 ## Debug
 
@@ -47,7 +47,7 @@ Run Project:\
 `./Culture_Cultivation`\
 \
 This is also a quicker version of the above cmake:\
-`clear ; cmake -DCMAKE_BUILD_TYPE=Debug ../src/ && make -j16`
+`clear ; cmake -DCMAKE_BUILD_TYPE=Debug ../src/ && make -j24`
 
 ## Design notes:
 

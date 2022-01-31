@@ -19,7 +19,6 @@ namespace render{
 
   int render() { // This is where the actual rendering of the map and objects occur. No bounding just fast computation of all object images
     sf::RenderWindow window(sf::VideoMode(1024, 576), "Culture & Cultivation");
-    std::mutex mtx; // our thread binder
     bool windowIsFocused = true;
 
     worldViewMove = sf::Vector2f(0.0f, 0.0f);
@@ -27,9 +26,7 @@ namespace render{
     UIView = window.getDefaultView();
 
     // Setup our MapChunk pointers
-    mtx.lock();
     globals::MapChunk **centerChunkPointer = &globals::centerChunk; // need a double pointer to validate that center chunk is defined before printing stuff to draw
-    mtx.unlock();
     globals::MapChunk *mc = nullptr; // Our actual camera view map pointer
 
     // Get fps
@@ -57,8 +54,8 @@ namespace render{
       if (utils::ctimeToMilliseconds((abs(timeOfLastRender - std::clock()))) < 7) { // this basically allows for 150 frames / second, no more.
         std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(utils::ctimeToMilliseconds((abs(7 - (timeOfLastRender - std::clock())))))));
       }
-
       timeOfLastRender = std::clock(); // update time once sleep is finished
+      
       sf::Event event;
       while (window.pollEvent(event))
       {
@@ -104,11 +101,9 @@ namespace render{
       // MUST be done before update
       windowSize = sf::Vector2<unsigned int>(window.getSize().x, window.getSize().y);
       worldViewSize = sf::Vector2f(worldView.getSize().x, worldView.getSize().y);
-      mtx.lock();
       if (*centerChunkPointer != nullptr && mc == nullptr) { // init the map loader
         mc = *centerChunkPointer;
       }
-      mtx.unlock();
      
       // Move worldView based on zoom
       worldView.zoom(camera::cameraZoom);
