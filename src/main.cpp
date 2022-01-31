@@ -23,7 +23,7 @@ assets::SpriteSheet *assets::spriteSheets[3];
 
 int main() {
   // Hardcode corecount
-  globals::coreCount = 16;
+  globals::coreCount = 18;
   globals::init();
   assets::loadFonts();
   assets::loadTextures();
